@@ -33,6 +33,28 @@ exports.registerUser = (appReq, appRes) => {
    * 3. validate for secure passwords and no easy to guess passwords
    */
 
+   if(!appReq.body.name || !appReq.body.password || !appReq.body.email){
+      
+      if(!validateEmail(appReq.body.email)) return appRes.status(400).send('Email is not valid');
+     
+      if(validatePass(appReq.body.password))return appRes.status(400)
+        .send('Password should be of minimum 6 characters & should include atleast one number');
+      
+   } 
+   else{
+      return appRes.status(400).send('One of the field(s) was empty');
+   }
+   
+   const validateEmail => function (email) {
+     let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+     return re.test(String(email).toLowerCase());
+   }
+
+   const validatePass => function(password) { 
+      let re = /^(?=.*[0-9])[a-zA-Z0-9!@#$%^&*]{6,}$/;
+      return re.test(String(password));
+   }
+
   // encrypt password
   const HASHED_PASSWORD = bcrypt.hashSync(appReq.body.password, 8);
 
